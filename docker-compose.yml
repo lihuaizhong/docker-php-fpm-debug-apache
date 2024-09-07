@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  apache:
+    build: ./apache
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./apache/vhosts.conf:/usr/local/apache2/conf/extra/vhosts.conf
+    networks:
+      - app-network
+    container_name: apache
+
+  php-fpm:
+    build: ./php-fpm
+    volumes:
+      - ./src:/var/www/html
+      - ./php-fpm/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      # - /root/docker/php-fpm/php.ini:/usr/local/etc/php/php.ini
+      # - /root/docker/php-fpm/etc/php-fpm.d/:/usr/local/etc/php-fpm.d/
+    ports:
+      - "9013:9003"
+    networks:
+      - app-network
+
+    container_name: php-fpm
+networks:
+  app-network:
+    driver: bridge
